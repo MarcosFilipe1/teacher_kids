@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora – Estimulação</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0f1117;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    gap: 24px;
+  }
+  .top-bar {
+    width: 100%; max-width: 900px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .back-btn { color: #888; text-decoration: none; font-size: 1rem; }
+  .back-btn:hover { color: #fff; }
+  .profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: #3a1a2e; padding: 8px 16px;
+    border-radius: 99px; font-size: 0.9rem; color: #f57ab3; font-weight: 500;
+  }
+
+  .tip-banner {
+    width: 100%; max-width: 900px;
+    background: #1a1a2e;
+    border: 1px solid #3a2a4e;
+    border-radius: 16px;
+    padding: 16px 20px;
+    font-size: 0.95rem;
+    color: #b8a0d0;
+    line-height: 1.5;
+  }
+  .tip-banner strong { color: #f57ab3; }
+
+  .categories {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    width: 100%; max-width: 900px;
+  }
+  .cat-btn {
+    background: #1a1f2e; border: 2px solid #2a2f3e;
+    border-radius: 20px; padding: 28px 20px;
+    cursor: pointer; color: #fff; text-align: left;
+    transition: all 0.2s;
+  }
+  .cat-btn:hover { border-color: #f57ab3; background: #1a1530; transform: translateY(-2px); }
+  .cat-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+  .cat-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+  .cat-desc { font-size: 0.85rem; color: #888; }
+
+  .response-area {
+    width: 100%; max-width: 900px;
+    background: #1a1a2e; border: 2px solid #3a2a4e;
+    border-radius: 24px; padding: 32px;
+    display: none; flex-direction: column; gap: 20px;
+  }
+  .response-area.visible { display: flex; }
+  .response-label { font-size: 0.85rem; color: #f57ab3; font-weight: 600; }
+  .response-text { font-size: 1.1rem; line-height: 1.7; color: #e0d0f0; }
+
+  .play-btn {
+    align-self: flex-start;
+    background: #3a2a4e; border: none; color: #f57ab3;
+    padding: 10px 24px; border-radius: 99px;
+    font-size: 0.9rem; cursor: pointer; font-weight: 500;
+    transition: background 0.2s;
+  }
+  .play-btn:hover { background: #4a3a5e; }
+
+  .loading { color: #888; font-size: 0.9rem; display: none; text-align: center; }
+  .loading.visible { display: block; }
+
+  .dev-notes {
+    width: 100%; max-width: 900px;
+    background: #1a2010; border: 1px solid #2a4020;
+    border-radius: 16px; padding: 20px;
+  }
+  .dev-title { font-size: 0.8rem; color: #5ba35b; font-weight: 600; margin-bottom: 12px; }
+  .dev-item { font-size: 0.9rem; color: #8ab880; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="/" class="back-btn">← voltar</a>
+  <div class="profile-pill">A · Aurora · 10 meses</div>
+</div>
+
+<div class="tip-banner">
+  <strong>Lembre-se:</strong> Use estas atividades <strong>junto com a Aurora</strong>.
+  Fale as palavras olhando nos olhos dela, com expressão e carinho. Repetição é o segredo!
+</div>
+
+<div class="categories">
+  <button class="cat-btn" onclick="getAuroraTip('sons', this)">
+    <span class="cat-icon">👄</span>
+    <div class="cat-title">Sons e vogais</div>
+    <div class="cat-desc">Estimule a fala com vogais e consoantes bilíngues</div>
+  </button>
+  <button class="cat-btn" onclick="getAuroraTip('rotina', this)">
+    <span class="cat-icon">🌅</span>
+    <div class="cat-title">Rotina bilíngue</div>
+    <div class="cat-desc">Frases para banho, refeição, sono e brincadeira</div>
+  </button>
+  <button class="cat-btn" onclick="getAuroraTip('musicas', this)">
+    <span class="cat-icon">🎶</span>
+    <div class="cat-title">Músicas e cantigas</div>
+    <div class="cat-desc">Ritmo e melodia para o desenvolvimento</div>
+  </button>
+  <button class="cat-btn" onclick="getAuroraTip('objetos', this)">
+    <span class="cat-icon">🧸</span>
+    <div class="cat-title">Nomear objetos</div>
+    <div class="cat-desc">Aponte e fale o nome em PT e EN</div>
+  </button>
+</div>
+
+<div class="loading" id="loading">Luna está pensando numa dica para a Aurora...</div>
+
+<div class="response-area" id="response-area">
+  <div class="response-label">🌙 Dica da Professora Luna</div>
+  <div class="response-text" id="response-text"></div>
+  <button class="play-btn" id="play-btn" onclick="replayAudio()">▶ Ouvir novamente</button>
+</div>
+
+<div class="dev-notes">
+  <div class="dev-title">Desenvolvimento esperado para 10 meses</div>
+  <div class="dev-item">
+    ✓ Imita sons e expressões faciais<br>
+    ✓ Entende "não" e o próprio nome<br>
+    ✓ Usa gestos como apontar e acenar<br>
+    ✓ Produz sons como "mamã", "babá", "dadá"<br>
+    ✓ Pronto para input bilíngue consistente
+  </div>
+</div>
+
+<script>
+let lastAudioB64 = null;
+let sessionId = null;
+
+async function initSession() {
+  const res = await fetch('/api/session/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ profile: 'aurora', activity: 'stimulation' }),
+  });
+  const data = await res.json();
+  sessionId = data.session_id;
+}
+
+async function getAuroraTip(category, btn) {
+  document.getElementById('loading').classList.add('visible');
+  document.getElementById('response-area').classList.remove('visible');
+
+  const res = await fetch('/api/aurora/tip', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ category }),
+  });
+  const data = await res.json();
+
+  document.getElementById('loading').classList.remove('visible');
+  document.getElementById('response-text').textContent = data.text;
+  document.getElementById('response-area').classList.add('visible');
+
+  if (data.audio_b64) {
+    lastAudioB64 = data.audio_b64;
+    playAudioB64(data.audio_b64);
+  }
+}
+
+function replayAudio() {
+  if (lastAudioB64) playAudioB64(lastAudioB64);
+}
+
+function playAudioB64(b64) {
+  const audio = new Audio('data:audio/mp3;base64,' + b64);
+  audio.play().catch(() => {});
+}
+
+window.addEventListener('load', initSession);
+window.addEventListener('beforeunload', () => {
+  if (sessionId) {
+    navigator.sendBeacon('/api/session/end',
+      JSON.stringify({ profile: 'aurora' }));
+  }
+});
+</script>
+
+</body>
+</html>

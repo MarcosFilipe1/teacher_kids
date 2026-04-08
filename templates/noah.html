@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noah – Aprendendo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0f1117;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    gap: 24px;
+  }
+  .top-bar {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .back-btn {
+    color: #888;
+    text-decoration: none;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: #fff; }
+  .profile-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #1a3a5c;
+    padding: 8px 16px;
+    border-radius: 99px;
+    font-size: 0.9rem;
+    color: #5ba3f5;
+    font-weight: 500;
+  }
+
+  /* Atividades */
+  .activities {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .activity-btn {
+    background: #1a1f2e;
+    border: 2px solid #2a2f3e;
+    border-radius: 20px;
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    color: #fff;
+  }
+  .activity-btn:hover {
+    border-color: #7c6af7;
+    background: #1d1a3a;
+    transform: translateY(-2px);
+  }
+  .activity-btn.active { border-color: #7c6af7; background: #1d1a3a; }
+  .act-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+  .act-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 4px; }
+  .act-desc { font-size: 0.85rem; color: #888; }
+  .lang-pills { display: flex; gap: 6px; margin-top: 10px; }
+  .lang-pill {
+    font-size: 0.7rem; padding: 3px 10px; border-radius: 99px; font-weight: 500;
+  }
+  .pt { background: #1a3a1a; color: #5ba35b; }
+  .en { background: #1a3a5c; color: #5ba3f5; }
+
+  /* Área principal de atividade */
+  .activity-area {
+    width: 100%;
+    max-width: 900px;
+    background: #1a1f2e;
+    border-radius: 24px;
+    border: 2px solid #2a2f3e;
+    padding: 40px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    min-height: 320px;
+  }
+  .activity-area.visible { display: flex; }
+
+  /* Palavra com figura */
+  .word-display { text-align: center; }
+  .word-emoji { font-size: clamp(5rem, 15vw, 8rem); display: block; margin-bottom: 16px; }
+  .word-pt { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; color: #f5f5f5; }
+  .word-en { font-size: clamp(1.2rem, 3.5vw, 2rem); color: #5ba3f5; margin-top: 8px; }
+  .word-phonetic { font-size: 1rem; color: #888; margin-top: 4px; }
+
+  .word-nav {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .nav-btn {
+    background: #2a2f3e;
+    border: none;
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .nav-btn:hover { background: #3a3f4e; }
+
+  /* Microfone */
+  .mic-section { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .mic-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #2a2f3e;
+    background: #1a1f2e;
+    cursor: pointer;
+    font-size: 2.5rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mic-btn:hover { border-color: #7c6af7; background: #1d1a3a; }
+  .mic-btn.recording {
+    border-color: #f75a5a;
+    background: #3a1a1a;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .mic-label { font-size: 0.9rem; color: #888; }
+
+  /* Professora fala */
+  .teacher-bubble {
+    background: #1d1a3a;
+    border: 1px solid #7c6af7;
+    border-radius: 16px;
+    padding: 16px 20px;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 600px;
+    width: 100%;
+    display: none;
+  }
+  .teacher-bubble.visible { display: block; }
+  .teacher-name { font-size: 0.8rem; color: #7c6af7; font-weight: 600; margin-bottom: 6px; }
+
+  /* Loading */
+  .thinking { color: #888; font-size: 0.9rem; display: none; }
+  .thinking.visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="/" class="back-btn">← voltar</a>
+  <div class="profile-pill">
+    <span>N</span> Noah · 6 anos
+  </div>
+</div>
+
+<div class="activities" id="activities-grid">
+  <button class="activity-btn" onclick="selectActivity('words', this)">
+    <span class="act-icon">🔤</span>
+    <div class="act-title">Palavras com figura</div>
+    <div class="act-desc">Aprenda o nome das coisas em PT e EN</div>
+    <div class="lang-pills"><span class="lang-pill pt">PT</span><span class="lang-pill en">EN</span></div>
+  </button>
+  <button class="activity-btn" onclick="selectActivity('letters', this)">
+    <span class="act-icon">🎵</span>
+    <div class="act-title">Letras e sons</div>
+    <div class="act-desc">Fonética bilíngue divertida</div>
+    <div class="lang-pills"><span class="lang-pill pt">PT</span><span class="lang-pill en">EN</span></div>
+  </button>
+  <button class="activity-btn" onclick="selectActivity('syllables', this)">
+    <span class="act-icon">✏️</span>
+    <div class="act-title">Sílabas</div>
+    <div class="act-desc">Divide as palavras em pedacinhos</div>
+    <div class="lang-pills"><span class="lang-pill pt">PT</span></div>
+  </button>
+  <button class="activity-btn" onclick="selectActivity('story', this)">
+    <span class="act-icon">📖</span>
+    <div class="act-title">Historinha</div>
+    <div class="act-desc">Leitura guiada bilíngue</div>
+    <div class="lang-pills"><span class="lang-pill pt">PT</span><span class="lang-pill en">EN</span></div>
+  </button>
+</div>
+
+<!-- Área de atividade -->
+<div class="activity-area" id="activity-area">
+
+  <!-- Palavra atual (para atividade 'words') -->
+  <div class="word-display" id="word-display">
+    <span class="word-emoji" id="word-emoji">🍎</span>
+    <div class="word-pt" id="word-pt">Maçã</div>
+    <div class="word-en" id="word-en">Apple</div>
+    <div class="word-phonetic" id="word-phonetic">(épl)</div>
+    <div class="word-nav">
+      <button class="nav-btn" onclick="prevWord()">← Anterior</button>
+      <button class="nav-btn" onclick="nextWord()">Próxima →</button>
+    </div>
+  </div>
+
+  <!-- Microfone -->
+  <div class="mic-section">
+    <button class="mic-btn" id="mic-btn" onclick="toggleRecording()">🎤</button>
+    <div class="mic-label" id="mic-label">Toque para falar</div>
+  </div>
+
+  <div class="thinking" id="thinking">Luna está pensando...</div>
+
+  <!-- Resposta da professora -->
+  <div class="teacher-bubble" id="teacher-bubble">
+    <div class="teacher-name">🌙 Professora Luna</div>
+    <div id="teacher-text"></div>
+  </div>
+
+</div>
+
+<script>
+const WORDS = [
+  { emoji: '🍎', pt: 'Maçã',     en: 'Apple',    ph: '(épl)' },
+  { emoji: '🐶', pt: 'Cachorro', en: 'Dog',       ph: '(dóg)' },
+  { emoji: '🌙', pt: 'Lua',      en: 'Moon',      ph: '(mún)' },
+  { emoji: '🐱', pt: 'Gato',     en: 'Cat',       ph: '(kát)' },
+  { emoji: '🌳', pt: 'Árvore',   en: 'Tree',      ph: '(trí)' },
+  { emoji: '🐠', pt: 'Peixe',    en: 'Fish',      ph: '(físh)' },
+  { emoji: '🚗', pt: 'Carro',    en: 'Car',       ph: '(kár)' },
+  { emoji: '⭐', pt: 'Estrela',  en: 'Star',      ph: '(stár)' },
+  { emoji: '🦋', pt: 'Borboleta',en: 'Butterfly', ph: '(báterflai)' },
+  { emoji: '🐘', pt: 'Elefante', en: 'Elephant',  ph: '(élifant)' },
+  { emoji: '🌊', pt: 'Onda',     en: 'Wave',      ph: '(wêiv)' },
+  { emoji: '🍕', pt: 'Pizza',    en: 'Pizza',     ph: '(pítsa)' },
+];
+
+let wordIdx = 0;
+let currentActivity = null;
+let sessionId = null;
+let isRecording = false;
+let mediaRecorder = null;
+let audioChunks = [];
+
+function showWord() {
+  const w = WORDS[wordIdx];
+  document.getElementById('word-emoji').textContent = w.emoji;
+  document.getElementById('word-pt').textContent = w.pt;
+  document.getElementById('word-en').textContent = w.en;
+  document.getElementById('word-phonetic').textContent = w.ph;
+}
+
+function nextWord() { wordIdx = (wordIdx + 1) % WORDS.length; showWord(); }
+function prevWord() { wordIdx = (wordIdx - 1 + WORDS.length) % WORDS.length; showWord(); }
+
+async function selectActivity(type, btn) {
+  document.querySelectorAll('.activity-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentActivity = type;
+
+  // Inicia sessão
+  const res = await fetch('/api/session/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ profile: 'noah', activity: type }),
+  });
+  const data = await res.json();
+  sessionId = data.session_id;
+
+  document.getElementById('activity-area').classList.add('visible');
+  document.getElementById('word-display').style.display =
+    type === 'words' ? 'block' : 'none';
+
+  // Apresentação da professora
+  await teacherSpeak(`Oi Noah! Vamos ${type === 'words' ? 'aprender palavras novas' : 'brincar com ' + type}! Estou animada!`);
+}
+
+async function toggleRecording() {
+  if (isRecording) {
+    stopRecording();
+  } else {
+    startRecording();
+  }
+}
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = processRecording;
+    mediaRecorder.start();
+    isRecording = true;
+    document.getElementById('mic-btn').classList.add('recording');
+    document.getElementById('mic-btn').textContent = '⏹️';
+    document.getElementById('mic-label').textContent = 'Ouvindo... toque para parar';
+  } catch (err) {
+    document.getElementById('mic-label').textContent = 'Microfone não encontrado';
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder) mediaRecorder.stop();
+  isRecording = false;
+  document.getElementById('mic-btn').classList.remove('recording');
+  document.getElementById('mic-btn').textContent = '🎤';
+  document.getElementById('mic-label').textContent = 'Processando...';
+}
+
+async function processRecording() {
+  const blob = new Blob(audioChunks, { type: 'audio/webm' });
+  const formData = new FormData();
+  formData.append('audio', blob, 'audio.webm');
+
+  setThinking(true);
+
+  // 1. Transcreve
+  const sttRes = await fetch('/api/voice/listen', { method: 'POST', body: formData });
+  const { text } = await sttRes.json();
+
+  if (!text) {
+    setThinking(false);
+    document.getElementById('mic-label').textContent = 'Não entendi, tente novamente';
+    return;
+  }
+
+  // 2. Para atividade de palavras, compara com a palavra atual
+  if (currentActivity === 'words') {
+    const word = WORDS[wordIdx];
+    const correct = text.toLowerCase().includes(word.en.toLowerCase()) ||
+                    text.toLowerCase().includes(word.pt.toLowerCase());
+
+    const fbRes = await fetch('/api/word/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        word_pt: word.pt,
+        word_en: word.en,
+        child_said: text,
+        correct,
+      }),
+    });
+    const fb = await fbRes.json();
+    setThinking(false);
+    showTeacherBubble(fb.text);
+    playAudioB64(fb.audio_b64);
+    if (correct) setTimeout(nextWord, 3000);
+  } else {
+    // Para outras atividades, resposta livre da professora
+    const res = await fetch('/api/voice/respond', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ profile: 'noah', text, activity: currentActivity }),
+    });
+    const data = await res.json();
+    setThinking(false);
+    showTeacherBubble(data.text);
+    playAudioB64(data.audio_b64);
+  }
+
+  document.getElementById('mic-label').textContent = 'Toque para falar';
+}
+
+async function teacherSpeak(text) {
+  showTeacherBubble(text);
+  const res = await fetch('/api/voice/respond', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ profile: 'noah', text: '__greet__', activity: currentActivity }),
+  });
+}
+
+function showTeacherBubble(text) {
+  document.getElementById('teacher-text').textContent = text;
+  document.getElementById('teacher-bubble').classList.add('visible');
+}
+
+function setThinking(on) {
+  document.getElementById('thinking').classList.toggle('visible', on);
+  document.getElementById('mic-btn').disabled = on;
+}
+
+function playAudioB64(b64) {
+  if (!b64) return;
+  const audio = new Audio('data:audio/mp3;base64,' + b64);
+  audio.play().catch(() => {});
+}
+
+// Init
+showWord();
+
+// Finaliza sessão ao sair
+window.addEventListener('beforeunload', () => {
+  if (sessionId) {
+    navigator.sendBeacon('/api/session/end',
+      JSON.stringify({ profile: 'noah' }));
+  }
+});
+</script>
+
+</body>
+</html>
