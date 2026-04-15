@@ -1,4 +1,4 @@
-# EduApp Parental Control Skill
+## EduApp Parental Control Skill
 
 ## Description
 Controle parental do EduApp — app educativo bilíngue dos filhos Noah (6 anos) e Aurora (10 meses).
