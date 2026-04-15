@@ -2,305 +2,485 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Noah – Aprendendo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Noah – Trilha de Aprendizado</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #0f1117;
-    color: #fff;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px 20px;
-    gap: 24px;
-  }
-  .top-bar {
-    width: 100%;
-    max-width: 900px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .back-btn {
-    color: #888;
-    text-decoration: none;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: color 0.2s;
-  }
-  .back-btn:hover { color: #fff; }
-  .profile-pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #1a3a5c;
-    padding: 8px 16px;
-    border-radius: 99px;
-    font-size: 0.9rem;
-    color: #5ba3f5;
-    font-weight: 500;
-  }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:#0f1117; color:#fff; min-height:100dvh; display:flex; flex-direction:column; }
 
-  /* Atividades */
-  .activities {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    width: 100%;
-    max-width: 900px;
-  }
-  .activity-btn {
-    background: #1a1f2e;
-    border: 2px solid #2a2f3e;
-    border-radius: 20px;
-    padding: 28px 24px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
-    color: #fff;
-  }
-  .activity-btn:hover {
-    border-color: #7c6af7;
-    background: #1d1a3a;
-    transform: translateY(-2px);
-  }
-  .activity-btn.active { border-color: #7c6af7; background: #1d1a3a; }
-  .act-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
-  .act-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 4px; }
-  .act-desc { font-size: 0.85rem; color: #888; }
-  .lang-pills { display: flex; gap: 6px; margin-top: 10px; }
-  .lang-pill {
-    font-size: 0.7rem; padding: 3px 10px; border-radius: 99px; font-weight: 500;
-  }
-  .pt { background: #1a3a1a; color: #5ba35b; }
-  .en { background: #1a3a5c; color: #5ba3f5; }
+/* Top bar */
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #1a1f2e; position:sticky; top:0; background:#0f1117; z-index:10; }
+.back-btn { color:#666; text-decoration:none; font-size:0.9rem; padding:8px; }
+.xp-badge { display:flex; align-items:center; gap:5px; background:#1a1f2e; padding:6px 12px; border-radius:99px; font-size:0.82rem; font-weight:600; color:#f5c842; }
+.streak-badge { display:flex; align-items:center; gap:4px; background:#1a1f2e; padding:6px 10px; border-radius:99px; font-size:0.82rem; color:#f5a742; }
 
-  /* Área principal de atividade */
-  .activity-area {
-    width: 100%;
-    max-width: 900px;
-    background: #1a1f2e;
-    border-radius: 24px;
-    border: 2px solid #2a2f3e;
-    padding: 40px;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-    min-height: 320px;
-  }
-  .activity-area.visible { display: flex; }
+/* Dino */
+.dino-hero { display:flex; flex-direction:column; align-items:center; padding:16px 16px 8px; gap:6px; }
+.dino-emoji { font-size:clamp(3.5rem,12vw,5.5rem); line-height:1; transition:all 0.5s; }
+.dino-label { font-size:0.78rem; color:#555; }
+.dino-phase { font-size:0.75rem; padding:3px 10px; border-radius:99px; background:#1a2e1a; color:#5ba35b; font-weight:600; }
 
-  /* Palavra com figura */
-  .word-display { text-align: center; }
-  .word-emoji { font-size: clamp(5rem, 15vw, 8rem); display: block; margin-bottom: 16px; }
-  .word-pt { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; color: #f5f5f5; }
-  .word-en { font-size: clamp(1.2rem, 3.5vw, 2rem); color: #5ba3f5; margin-top: 8px; }
-  .word-phonetic { font-size: 1rem; color: #888; margin-top: 4px; }
+/* XP bar */
+.xp-bar-wrap { margin:0 16px 2px; background:#1a1f2e; border-radius:99px; height:7px; overflow:hidden; }
+.xp-bar { height:100%; background:linear-gradient(90deg,#7c6af7,#5ba3f5); border-radius:99px; transition:width 0.6s; }
+.xp-label { text-align:center; font-size:0.72rem; color:#333; margin-bottom:14px; }
 
-  .word-nav {
-    display: flex;
-    gap: 16px;
-    margin-top: 8px;
-  }
-  .nav-btn {
-    background: #2a2f3e;
-    border: none;
-    color: #fff;
-    padding: 14px 32px;
-    border-radius: 12px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .nav-btn:hover { background: #3a3f4e; }
+/* Trail */
+.trail-title { padding:0 16px 10px; font-size:0.7rem; color:#333; text-transform:uppercase; letter-spacing:0.08em; }
+.trail { display:flex; flex-direction:column; padding:0 16px; flex:1; gap:6px; }
+.phase-block { }
+.phase-header { display:flex; align-items:center; gap:10px; padding:8px 0 6px; }
+.phase-dot { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:700; flex-shrink:0; }
+.phase-dot.done { background:#1a2e1a; color:#5ba35b; }
+.phase-dot.active { background:#1d1a3a; color:#7c6af7; border:2px solid #7c6af7; }
+.phase-dot.locked { background:#1a1f2e; color:#333; }
+.phase-title { font-size:0.9rem; font-weight:600; }
+.phase-title.locked { color:#333; }
+.steps { display:flex; gap:8px; padding:0 0 10px 40px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.step-btn { display:flex; flex-direction:column; align-items:center; gap:5px; min-width:76px; padding:12px 8px; background:#1a1f2e; border:2px solid #2a2f3e; border-radius:14px; cursor:pointer; color:#fff; transition:all 0.2s; flex-shrink:0; }
+.step-btn:active { transform:scale(0.94); }
+.step-btn.done { border-color:#1a3a1a; background:#111a11; }
+.step-btn.active { border-color:#7c6af7; background:#1d1a3a; }
+.step-btn.locked { opacity:0.35; cursor:not-allowed; }
+.step-icon { font-size:1.5rem; }
+.step-label { font-size:0.65rem; color:#888; text-align:center; line-height:1.3; }
+.step-btn.active .step-label { color:#b8a0f7; }
+.step-check { font-size:0.65rem; }
+.step-btn.done .step-check { color:#5ba35b; }
+.step-btn.active .step-check { color:#b8a0f7; }
 
-  /* Microfone */
-  .mic-section { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px; }
-  .mic-btn {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 3px solid #2a2f3e;
-    background: #1a1f2e;
-    cursor: pointer;
-    font-size: 2.5rem;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .mic-btn:hover { border-color: #7c6af7; background: #1d1a3a; }
-  .mic-btn.recording {
-    border-color: #f75a5a;
-    background: #3a1a1a;
-    animation: pulse 1s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-  }
-  .mic-label { font-size: 0.9rem; color: #888; }
+/* Activity overlay */
+.act-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:100; flex-direction:column; align-items:center; justify-content:flex-end; }
+.act-overlay.visible { display:flex; }
+.act-sheet { background:#141926; border-radius:24px 24px 0 0; width:100%; max-width:600px; padding:16px 16px 32px; display:flex; flex-direction:column; gap:14px; max-height:92dvh; overflow-y:auto; }
+.sheet-handle { width:36px; height:4px; background:#2a2f3e; border-radius:2px; margin:0 auto; }
+.sheet-title { text-align:center; font-size:0.88rem; font-weight:600; color:#7c6af7; }
 
-  /* Professora fala */
-  .teacher-bubble {
-    background: #1d1a3a;
-    border: 1px solid #7c6af7;
-    border-radius: 16px;
-    padding: 16px 20px;
-    font-size: 1.05rem;
-    line-height: 1.6;
-    max-width: 600px;
-    width: 100%;
-    display: none;
-  }
-  .teacher-bubble.visible { display: block; }
-  .teacher-name { font-size: 0.8rem; color: #7c6af7; font-weight: 600; margin-bottom: 6px; }
+/* Word display */
+.word-card { background:#1a1f2e; border-radius:18px; padding:20px 16px; text-align:center; display:flex; flex-direction:column; gap:6px; }
+.word-emoji-big { font-size:clamp(3.5rem,16vw,6rem); }
+.word-pt { font-size:clamp(1.6rem,6.5vw,2.5rem); font-weight:700; }
+.word-en { font-size:clamp(1rem,4vw,1.5rem); color:#5ba3f5; }
+.word-ph { font-size:0.85rem; color:#444; }
 
-  /* Loading */
-  .thinking { color: #888; font-size: 0.9rem; display: none; }
-  .thinking.visible { display: block; }
+/* Luna fala */
+.luna-area { display:flex; flex-direction:column; gap:10px; }
+.luna-bubble { background:#1d1a3a; border:1px solid #7c6af7; border-radius:14px; padding:12px 14px; font-size:0.92rem; line-height:1.6; display:none; }
+.luna-bubble.visible { display:block; }
+.luna-name { font-size:0.7rem; color:#7c6af7; font-weight:700; margin-bottom:5px; }
+.luna-thinking { text-align:center; font-size:0.82rem; color:#444; display:none; padding:8px; }
+.luna-thinking.visible { display:block; }
+
+/* Mic */
+.mic-section { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.mic-btn { width:72px; height:72px; border-radius:50%; background:#1a1f2e; border:3px solid #2a2f3e; font-size:1.8rem; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+.mic-btn.recording { border-color:#f75a5a; background:#2a1a1a; animation:pulse 1s infinite; }
+.mic-btn:disabled { opacity:0.4; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+.mic-label { font-size:0.8rem; color:#555; }
+
+/* XP pop */
+.xp-pop { text-align:center; font-size:1.1rem; font-weight:700; color:#f5c842; display:none; animation:pop 0.4s; }
+.xp-pop.visible { display:block; }
+@keyframes pop { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+
+/* Progress mini */
+.step-progress { display:flex; align-items:center; justify-content:center; gap:6px; font-size:0.75rem; color:#555; }
+.word-dots { display:flex; gap:5px; }
+.word-dot { width:8px; height:8px; border-radius:50%; background:#2a2f3e; transition:all 0.3s; }
+.word-dot.done { background:#5ba35b; }
+.word-dot.current { background:#7c6af7; transform:scale(1.3); }
+
+/* Close btn */
+.close-btn { background:#1a1f2e; border:none; color:#666; padding:10px; border-radius:10px; font-size:0.85rem; cursor:pointer; text-align:center; }
+
+/* Dino evolve */
+.dino-evolve { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:200; flex-direction:column; align-items:center; justify-content:center; gap:18px; }
+.dino-evolve.visible { display:flex; }
+.evolve-emoji { font-size:clamp(5rem,20vw,8rem); animation:bounce 0.6s infinite alternate; }
+@keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-16px)} }
+.evolve-title { font-size:clamp(1.4rem,5vw,2rem); font-weight:700; color:#f5c842; text-align:center; padding:0 20px; }
+.evolve-sub { font-size:clamp(0.9rem,3vw,1.1rem); color:#aaa; text-align:center; padding:0 20px; }
+.evolve-btn { padding:14px 40px; background:#7c6af7; border:none; color:#fff; border-radius:14px; font-size:1rem; font-weight:600; cursor:pointer; }
+
+.safe-bottom { height:env(safe-area-inset-bottom,16px); }
 </style>
 </head>
 <body>
 
-<div class="top-bar">
+<div class="topbar">
   <a href="/" class="back-btn">← voltar</a>
-  <div class="profile-pill">
-    <span>N</span> Noah · 6 anos
-  </div>
+  <div class="xp-badge">⭐ <span id="xp-total">0</span></div>
+  <div class="streak-badge">🔥 <span id="streak">0</span>d</div>
 </div>
 
-<div class="activities" id="activities-grid">
-  <button class="activity-btn" onclick="selectActivity('words', this)">
-    <span class="act-icon">🔤</span>
-    <div class="act-title">Palavras com figura</div>
-    <div class="act-desc">Aprenda o nome das coisas em PT e EN</div>
-    <div class="lang-pills"><span class="lang-pill pt">PT</span><span class="lang-pill en">EN</span></div>
-  </button>
-  <button class="activity-btn" onclick="selectActivity('letters', this)">
-    <span class="act-icon">🎵</span>
-    <div class="act-title">Letras e sons</div>
-    <div class="act-desc">Fonética bilíngue divertida</div>
-    <div class="lang-pills"><span class="lang-pill pt">PT</span><span class="lang-pill en">EN</span></div>
-  </button>
-  <button class="activity-btn" onclick="selectActivity('syllables', this)">
-    <span class="act-icon">✏️</span>
-    <div class="act-title">Sílabas</div>
-    <div class="act-desc">Divide as palavras em pedacinhos</div>
-    <div class="lang-pills"><span class="lang-pill pt">PT</span></div>
-  </button>
-  <button class="activity-btn" onclick="selectActivity('story', this)">
-    <span class="act-icon">📖</span>
-    <div class="act-title">Historinha</div>
-    <div class="act-desc">Leitura guiada bilíngue</div>
-    <div class="lang-pills"><span class="lang-pill pt">PT</span><span class="lang-pill en">EN</span></div>
-  </button>
+<div class="dino-hero">
+  <div class="dino-emoji" id="dino-emoji">🥚</div>
+  <div class="dino-label" id="dino-label">Ovo misterioso</div>
+  <div class="dino-phase" id="dino-phase">Fase 1 de 4</div>
 </div>
 
-<!-- Área de atividade -->
-<div class="activity-area" id="activity-area">
+<div class="xp-bar-wrap"><div class="xp-bar" id="xp-bar" style="width:0%"></div></div>
+<div class="xp-label" id="xp-label">0 / 100 XP para evoluir</div>
 
-  <!-- Palavra atual (para atividade 'words') -->
-  <div class="word-display" id="word-display">
-    <span class="word-emoji" id="word-emoji">🍎</span>
-    <div class="word-pt" id="word-pt">Maçã</div>
-    <div class="word-en" id="word-en">Apple</div>
-    <div class="word-phonetic" id="word-phonetic">(épl)</div>
-    <div class="word-nav">
-      <button class="nav-btn" onclick="prevWord()">← Anterior</button>
-      <button class="nav-btn" onclick="nextWord()">Próxima →</button>
+<div class="trail-title">Sua trilha</div>
+<div class="trail" id="trail"></div>
+<div class="safe-bottom"></div>
+
+<!-- Atividade -->
+<div class="act-overlay" id="act-overlay">
+  <div class="act-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-title">Carregando...</div>
+
+    <div class="word-card">
+      <div class="word-emoji-big" id="word-emoji">🐶</div>
+      <div class="word-pt" id="word-pt">Cachorro</div>
+      <div class="word-en" id="word-en">Dog</div>
+      <div class="word-ph" id="word-ph">(dóg)</div>
     </div>
+
+    <div class="step-progress">
+      <div class="word-dots" id="word-dots"></div>
+      <span id="word-counter">1 / 8</span>
+    </div>
+
+    <div class="luna-area">
+      <div class="luna-thinking" id="luna-thinking">Luna está pensando...</div>
+      <div class="luna-bubble" id="luna-bubble">
+        <div class="luna-name">🌙 Professora Luna</div>
+        <div id="luna-text"></div>
+      </div>
+    </div>
+
+    <div class="xp-pop" id="xp-pop">+10 XP ⭐</div>
+
+    <div class="mic-section">
+      <button class="mic-btn" id="mic-btn" onclick="toggleRecording()">🎤</button>
+      <div class="mic-label" id="mic-label">Aguardando Luna...</div>
+    </div>
+
+    <button class="close-btn" onclick="closeActivity()">Fechar atividade</button>
   </div>
+</div>
 
-  <!-- Microfone -->
-  <div class="mic-section">
-    <button class="mic-btn" id="mic-btn" onclick="toggleRecording()">🎤</button>
-    <div class="mic-label" id="mic-label">Toque para falar</div>
-  </div>
-
-  <div class="thinking" id="thinking">Luna está pensando...</div>
-
-  <!-- Resposta da professora -->
-  <div class="teacher-bubble" id="teacher-bubble">
-    <div class="teacher-name">🌙 Professora Luna</div>
-    <div id="teacher-text"></div>
-  </div>
-
+<!-- Dino evolução -->
+<div class="dino-evolve" id="dino-evolve">
+  <div class="evolve-emoji" id="evolve-emoji">🦕</div>
+  <div class="evolve-title" id="evolve-title">Parabéns, Noah!</div>
+  <div class="evolve-sub" id="evolve-sub">Seu dinossauro evoluiu!</div>
+  <button class="evolve-btn" onclick="closeDinoEvolve()">Continuar! →</button>
 </div>
 
 <script>
-const WORDS = [
-  { emoji: '🍎', pt: 'Maçã',     en: 'Apple',    ph: '(épl)' },
-  { emoji: '🐶', pt: 'Cachorro', en: 'Dog',       ph: '(dóg)' },
-  { emoji: '🌙', pt: 'Lua',      en: 'Moon',      ph: '(mún)' },
-  { emoji: '🐱', pt: 'Gato',     en: 'Cat',       ph: '(kát)' },
-  { emoji: '🌳', pt: 'Árvore',   en: 'Tree',      ph: '(trí)' },
-  { emoji: '🐠', pt: 'Peixe',    en: 'Fish',      ph: '(físh)' },
-  { emoji: '🚗', pt: 'Carro',    en: 'Car',       ph: '(kár)' },
-  { emoji: '⭐', pt: 'Estrela',  en: 'Star',      ph: '(stár)' },
-  { emoji: '🦋', pt: 'Borboleta',en: 'Butterfly', ph: '(báterflai)' },
-  { emoji: '🐘', pt: 'Elefante', en: 'Elephant',  ph: '(élifant)' },
-  { emoji: '🌊', pt: 'Onda',     en: 'Wave',      ph: '(wêiv)' },
-  { emoji: '🍕', pt: 'Pizza',    en: 'Pizza',     ph: '(pítsa)' },
+// ─── Dados ────────────────────────────────────────────────────────────────────
+const PHASES = [
+  { id:1, title:"As Primeiras Palavras", steps:[
+    { id:1, icon:"🐾", label:"Animais", activity:"words", wsKey:"animals" },
+    { id:2, icon:"🍎", label:"Frutas",  activity:"words", wsKey:"fruits"  },
+    { id:3, icon:"🌈", label:"Cores",   activity:"words", wsKey:"colors"  },
+  ]},
+  { id:2, title:"Sons e Letras", steps:[
+    { id:1, icon:"🔤", label:"A ao F",  activity:"letters", wsKey:"abc1" },
+    { id:2, icon:"🔡", label:"G ao M",  activity:"letters", wsKey:"abc2" },
+    { id:3, icon:"🎵", label:"N ao Z",  activity:"letters", wsKey:"abc3" },
+  ]},
+  { id:3, title:"Sílabas", steps:[
+    { id:1, icon:"✏️", label:"2 sílabas", activity:"syllables", wsKey:"syl2"    },
+    { id:2, icon:"📝", label:"3 sílabas", activity:"syllables", wsKey:"syl3"    },
+    { id:3, icon:"🔠", label:"PT e EN",   activity:"syllables", wsKey:"sylboth" },
+  ]},
+  { id:4, title:"Frases Simples", steps:[
+    { id:1, icon:"💬", label:"Frases PT", activity:"story", wsKey:"phrases1" },
+    { id:2, icon:"🗣️", label:"Frases EN", activity:"story", wsKey:"phrases2" },
+    { id:3, icon:"📖", label:"Historinha", activity:"story", wsKey:"story1"  },
+  ]},
 ];
 
-let wordIdx = 0;
+const WORD_SETS = {
+  animals:[
+    {emoji:"🐶",pt:"Cachorro",en:"Dog",    ph:"(dóg)"},
+    {emoji:"🐱",pt:"Gato",    en:"Cat",    ph:"(kát)"},
+    {emoji:"🐘",pt:"Elefante",en:"Elephant",ph:"(élifant)"},
+    {emoji:"🦁",pt:"Leão",    en:"Lion",   ph:"(láion)"},
+    {emoji:"🐠",pt:"Peixe",   en:"Fish",   ph:"(físh)"},
+    {emoji:"🐦",pt:"Pássaro", en:"Bird",   ph:"(berd)"},
+    {emoji:"🐇",pt:"Coelho",  en:"Rabbit", ph:"(rábit)"},
+    {emoji:"🐢",pt:"Tartaruga",en:"Turtle",ph:"(tértel)"},
+  ],
+  fruits:[
+    {emoji:"🍎",pt:"Maçã",    en:"Apple",      ph:"(épl)"},
+    {emoji:"🍌",pt:"Banana",  en:"Banana",     ph:"(banána)"},
+    {emoji:"🍇",pt:"Uva",     en:"Grape",      ph:"(grêip)"},
+    {emoji:"🍓",pt:"Morango", en:"Strawberry", ph:"(stróberi)"},
+    {emoji:"🍊",pt:"Laranja", en:"Orange",     ph:"(ôrinj)"},
+    {emoji:"🍋",pt:"Limão",   en:"Lemon",      ph:"(lémon)"},
+    {emoji:"🍑",pt:"Pêssego", en:"Peach",      ph:"(pitch)"},
+    {emoji:"🍍",pt:"Abacaxi", en:"Pineapple",  ph:"(páinepl)"},
+  ],
+  colors:[
+    {emoji:"🔴",pt:"Vermelho",en:"Red",    ph:"(réd)"},
+    {emoji:"🔵",pt:"Azul",    en:"Blue",   ph:"(blú)"},
+    {emoji:"🟢",pt:"Verde",   en:"Green",  ph:"(grín)"},
+    {emoji:"🟡",pt:"Amarelo", en:"Yellow", ph:"(iélou)"},
+    {emoji:"🟠",pt:"Laranja", en:"Orange", ph:"(ôrinj)"},
+    {emoji:"⚫",pt:"Preto",   en:"Black",  ph:"(blák)"},
+    {emoji:"⚪",pt:"Branco",  en:"White",  ph:"(uáit)"},
+    {emoji:"🟣",pt:"Roxo",    en:"Purple", ph:"(pérpl)"},
+  ],
+  abc1:[
+    {emoji:"🍎",pt:"A de Árvore",en:"A for Apple", ph:"(êi)"},
+    {emoji:"🐝",pt:"B de Bola",  en:"B for Ball",  ph:"(bí)"},
+    {emoji:"🐱",pt:"C de Casa",  en:"C for Cat",   ph:"(sí)"},
+    {emoji:"🐕",pt:"D de Dado",  en:"D for Dog",   ph:"(dí)"},
+    {emoji:"🥚",pt:"E de Estrela",en:"E for Egg",  ph:"(í)"},
+    {emoji:"🐟",pt:"F de Foca",  en:"F for Fish",  ph:"(éf)"},
+  ],
+  abc2:[
+    {emoji:"🦒",pt:"G de Girafa",en:"G for Giraffe",ph:"(jí)"},
+    {emoji:"🏠",pt:"H de Hotel", en:"H for House",  ph:"(êitch)"},
+    {emoji:"🦞",pt:"I de Ilha",  en:"I for Island", ph:"(ái)"},
+    {emoji:"🤹",pt:"J de Jogo",  en:"J for Jump",   ph:"(jêi)"},
+    {emoji:"👑",pt:"K de Kiwi",  en:"K for King",   ph:"(kêi)"},
+    {emoji:"🦁",pt:"L de Leão",  en:"L for Lion",   ph:"(él)"},
+    {emoji:"🌙",pt:"M de Mel",   en:"M for Moon",   ph:"(êm)"},
+  ],
+  abc3:[
+    {emoji:"🌙",pt:"N de Nuvem", en:"N for Night",  ph:"(ên)"},
+    {emoji:"🐙",pt:"O de Ovo",   en:"O for Octopus",ph:"(ôu)"},
+    {emoji:"🐧",pt:"P de Pato",  en:"P for Penguin",ph:"(pí)"},
+    {emoji:"👑",pt:"Q de Quiabo",en:"Q for Queen",  ph:"(kiú)"},
+    {emoji:"🌹",pt:"R de Rosa",  en:"R for Rose",   ph:"(ár)"},
+    {emoji:"☀️",pt:"S de Sol",   en:"S for Sun",    ph:"(ês)"},
+    {emoji:"🐯",pt:"T de Tigre", en:"T for Tiger",  ph:"(tí)"},
+    {emoji:"🦄",pt:"U de Uva",   en:"U for Unicorn",ph:"(iú)"},
+    {emoji:"🌋",pt:"V de Vulcão",en:"V for Volcano",ph:"(ví)"},
+    {emoji:"🐺",pt:"W de Watts", en:"W for Wolf",   ph:"(dábliu)"},
+    {emoji:"🎸",pt:"X de Xilofone",en:"X for Xylophone",ph:"(êks)"},
+    {emoji:"🏆",pt:"Y de Yoga",  en:"Y for Yellow", ph:"(uái)"},
+    {emoji:"🦓",pt:"Z de Zebra", en:"Z for Zebra",  ph:"(zí)"},
+  ],
+  syl2:[
+    {emoji:"🐶",pt:"Ca-chorro",en:"Dog",ph:"(dóg)"},
+    {emoji:"🍎",pt:"Ma-çã",    en:"Apple",ph:"(épl)"},
+    {emoji:"🐱",pt:"Ga-to",    en:"Cat",ph:"(kát)"},
+    {emoji:"🍌",pt:"Ba-na-na",  en:"Banana",ph:"(banána)"},
+    {emoji:"🌙",pt:"Lu-a",     en:"Moon",ph:"(mún)"},
+    {emoji:"🏠",pt:"Ca-sa",    en:"House",ph:"(háus)"},
+  ],
+  syl3:[
+    {emoji:"🐘",pt:"E-le-fan-te",en:"Elephant",ph:"(élifant)"},
+    {emoji:"🦋",pt:"Bor-bo-le-ta",en:"Butterfly",ph:"(báterflai)"},
+    {emoji:"🍓",pt:"Mo-ran-go",   en:"Strawberry",ph:"(stróberi)"},
+    {emoji:"🐢",pt:"Tar-ta-ru-ga",en:"Turtle",ph:"(tértel)"},
+    {emoji:"🌺",pt:"A-ma-re-lo",  en:"Yellow",ph:"(iélou)"},
+  ],
+  sylboth:[
+    {emoji:"🐶",pt:"Ca-chorro",en:"Dog (dóg)",ph:""},
+    {emoji:"🍎",pt:"Ma-çã",    en:"Ap-ple (épl)",ph:""},
+    {emoji:"🌙",pt:"Lu-a",     en:"Moon (mún)",ph:""},
+    {emoji:"🐱",pt:"Ga-to",    en:"Cat (kát)",ph:""},
+  ],
+  phrases1:[
+    {emoji:"🐱",pt:"O gato é preto.",  en:"The cat is black.",  ph:""},
+    {emoji:"🐶",pt:"O cachorro é grande.",en:"The dog is big.", ph:""},
+    {emoji:"🌙",pt:"A lua é bonita.",   en:"The moon is pretty.",ph:""},
+    {emoji:"🍎",pt:"A maçã é vermelha.",en:"The apple is red.", ph:""},
+  ],
+  phrases2:[
+    {emoji:"🐱",pt:"O gato é preto.",  en:"The cat is black.",  ph:""},
+    {emoji:"🌙",pt:"A lua é bonita.",   en:"The moon is pretty.",ph:""},
+    {emoji:"🍎",pt:"A maçã é vermelha.",en:"The apple is red.", ph:""},
+    {emoji:"🐶",pt:"O cachorro é grande.",en:"The dog is big.", ph:""},
+  ],
+  story1:[
+    {emoji:"📖",pt:"Era uma vez um gato.",en:"Once upon a time, a cat.",ph:""},
+    {emoji:"🐱",pt:"O gato se chamava Max.",en:"The cat's name was Max.",ph:""},
+    {emoji:"🌙",pt:"Max amava a lua.",     en:"Max loved the moon.",   ph:""},
+    {emoji:"⭐",pt:"Fim! The End!",       en:"The End!",               ph:""},
+  ],
+};
+
+const DINO_STAGES = [
+  {emoji:"🥚",  name:"Ovo misterioso",   phase:"Fase 1 de 4"},
+  {emoji:"🦕",  name:"Filhote pequeno",  phase:"Fase 2 de 4"},
+  {emoji:"🦖",  name:"Dinossauro jovem", phase:"Fase 3 de 4"},
+  {emoji:"✨🦕",name:"Dino brilhante!",  phase:"Completo! 🎉"},
+];
+
+// ─── Estado ───────────────────────────────────────────────────────────────────
+let progress = {current_phase:1, current_step:1, total_xp:0, dino_stage:0, streak_days:0};
 let currentActivity = null;
+let wordSet = [];
+let wordIdx = 0;
 let sessionId = null;
+let lunaReady = false;
 let isRecording = false;
 let mediaRecorder = null;
 let audioChunks = [];
+const XP_PER_PHASE = 100;
 
-function showWord() {
-  const w = WORDS[wordIdx];
-  document.getElementById('word-emoji').textContent = w.emoji;
-  document.getElementById('word-pt').textContent = w.pt;
-  document.getElementById('word-en').textContent = w.en;
-  document.getElementById('word-phonetic').textContent = w.ph;
+// ─── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load', async () => {
+  const res = await fetch('/api/progress/noah');
+  if (res.ok) progress = await res.json();
+  renderAll();
+});
+
+function renderAll() {
+  renderDino();
+  renderXpBar();
+  renderTrail();
 }
 
-function nextWord() { wordIdx = (wordIdx + 1) % WORDS.length; showWord(); }
-function prevWord() { wordIdx = (wordIdx - 1 + WORDS.length) % WORDS.length; showWord(); }
+function renderDino() {
+  const s = DINO_STAGES[Math.min(progress.dino_stage || 0, 3)];
+  document.getElementById('dino-emoji').textContent = s.emoji;
+  document.getElementById('dino-label').textContent = s.name;
+  document.getElementById('dino-phase').textContent = s.phase;
+  document.getElementById('xp-total').textContent = progress.total_xp || 0;
+  document.getElementById('streak').textContent = progress.streak_days || 0;
+}
 
-async function selectActivity(type, btn) {
-  document.querySelectorAll('.activity-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentActivity = type;
+function renderXpBar() {
+  const xpInPhase = (progress.total_xp || 0) % XP_PER_PHASE;
+  const pct = Math.min((xpInPhase / XP_PER_PHASE) * 100, 100);
+  document.getElementById('xp-bar').style.width = pct + '%';
+  document.getElementById('xp-label').textContent = `${xpInPhase} / ${XP_PER_PHASE} XP para evoluir`;
+}
+
+function renderTrail() {
+  const trail = document.getElementById('trail');
+  trail.innerHTML = '';
+  PHASES.forEach(phase => {
+    const isDone   = phase.id < progress.current_phase;
+    const isActive = phase.id === progress.current_phase;
+    const isLocked = phase.id > progress.current_phase;
+
+    const block = document.createElement('div');
+    block.className = 'phase-block';
+    block.innerHTML = `
+      <div class="phase-header">
+        <div class="phase-dot ${isDone?'done':isActive?'active':'locked'}">${isDone?'✓':phase.id}</div>
+        <div class="phase-title${isLocked?' locked':''}">${phase.title}</div>
+      </div>
+      <div class="steps" id="steps-${phase.id}"></div>
+    `;
+    trail.appendChild(block);
+
+    const stepsDiv = block.querySelector(`#steps-${phase.id}`);
+    phase.steps.forEach(step => {
+      const stepDone   = isDone || (isActive && step.id < progress.current_step);
+      const stepActive = isActive && step.id === progress.current_step;
+      const stepLocked = isLocked || (isActive && step.id > progress.current_step);
+
+      const btn = document.createElement('button');
+      btn.className = `step-btn ${stepDone?'done':stepActive?'active':'locked'}`;
+      btn.innerHTML = `
+        <div class="step-icon">${step.icon}</div>
+        <div class="step-label">${step.label}</div>
+        <div class="step-check">${stepDone?'✓ feito':stepActive?'▶ jogar':''}</div>
+      `;
+      if (!stepLocked) btn.onclick = () => openStep(phase, step);
+      stepsDiv.appendChild(btn);
+    });
+  });
+}
+
+// ─── Abrir atividade ──────────────────────────────────────────────────────────
+async function openStep(phase, step) {
+  currentActivity = { phase, step };
+  wordSet = WORD_SETS[step.wsKey] || WORD_SETS.animals;
+  wordIdx = 0;
+  lunaReady = false;
+
+  document.getElementById('sheet-title').textContent = `${phase.title} · ${step.label}`;
+  document.getElementById('act-overlay').classList.add('visible');
+  document.getElementById('luna-bubble').classList.remove('visible');
+  document.getElementById('xp-pop').classList.remove('visible');
+  document.getElementById('mic-label').textContent = 'Aguardando Luna...';
+  document.getElementById('mic-btn').disabled = true;
+
+  showWord();
+  renderDots();
 
   // Inicia sessão
   const res = await fetch('/api/session/start', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ profile: 'noah', activity: type }),
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      profile:'noah', activity:step.activity,
+      phase:phase.id, step:step.id,
+      word_set: wordSet, word_set_key: step.wsKey,
+    }),
   });
   const data = await res.json();
   sessionId = data.session_id;
 
-  document.getElementById('activity-area').classList.add('visible');
-  document.getElementById('word-display').style.display =
-    type === 'words' ? 'block' : 'none';
-
-  // Apresentação da professora
-  await teacherSpeak(`Oi Noah! Vamos ${type === 'words' ? 'aprender palavras novas' : 'brincar com ' + type}! Estou animada!`);
+  // Luna fala ao abrir
+  await lunaStart(step.activity, step.wsKey);
 }
 
-async function toggleRecording() {
-  if (isRecording) {
-    stopRecording();
-  } else {
-    startRecording();
+async function lunaStart(activity, wsKey) {
+  setThinking(true);
+  const res = await fetch('/api/luna/start', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      profile:'noah',
+      activity_type: `${activity}_${wsKey}`,
+      word_set: wordSet,
+    }),
+  });
+  const data = await res.json();
+  setThinking(false);
+  showLuna(data.text);
+  playAudio(data.audio_b64);
+  lunaReady = true;
+  document.getElementById('mic-btn').disabled = false;
+  document.getElementById('mic-label').textContent = 'Toque e responda a Luna';
+}
+
+function showWord() {
+  const w = wordSet[wordIdx];
+  if (!w) return;
+  document.getElementById('word-emoji').textContent = w.emoji;
+  document.getElementById('word-pt').textContent = w.pt;
+  document.getElementById('word-en').textContent = w.en;
+  document.getElementById('word-ph').textContent = w.ph || '';
+  renderDots();
+}
+
+function renderDots() {
+  const container = document.getElementById('word-dots');
+  container.innerHTML = '';
+  wordSet.slice(0, 8).forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'word-dot' + (i < wordIdx ? ' done' : i === wordIdx ? ' current' : '');
+    container.appendChild(dot);
+  });
+  document.getElementById('word-counter').textContent = `${wordIdx + 1} / ${wordSet.length}`;
+}
+
+function closeActivity() {
+  document.getElementById('act-overlay').classList.remove('visible');
+  if (sessionId) {
+    fetch('/api/session/end', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({profile:'noah', xp:0}),
+    });
+    sessionId = null;
   }
+  lunaReady = false;
+}
+
+// ─── Gravação ─────────────────────────────────────────────────────────────────
+async function toggleRecording() {
+  if (!lunaReady) return;
+  if (isRecording) stopRecording(); else startRecording();
 }
 
 async function startRecording() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
     mediaRecorder = new MediaRecorder(stream);
     audioChunks = [];
     mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
@@ -310,8 +490,8 @@ async function startRecording() {
     document.getElementById('mic-btn').classList.add('recording');
     document.getElementById('mic-btn').textContent = '⏹️';
     document.getElementById('mic-label').textContent = 'Ouvindo... toque para parar';
-  } catch (err) {
-    document.getElementById('mic-label').textContent = 'Microfone não encontrado';
+  } catch(e) {
+    document.getElementById('mic-label').textContent = 'Microfone indisponível (precisa HTTPS)';
   }
 }
 
@@ -324,95 +504,103 @@ function stopRecording() {
 }
 
 async function processRecording() {
-  const blob = new Blob(audioChunks, { type: 'audio/webm' });
+  const blob = new Blob(audioChunks, {type:'audio/webm'});
   const formData = new FormData();
   formData.append('audio', blob, 'audio.webm');
 
+  document.getElementById('mic-btn').disabled = true;
   setThinking(true);
 
-  // 1. Transcreve
-  const sttRes = await fetch('/api/voice/listen', { method: 'POST', body: formData });
-  const { text } = await sttRes.json();
+  // Transcreve
+  const sttRes = await fetch('/api/voice/listen', {method:'POST', body:formData});
+  const {text} = await sttRes.json();
 
   if (!text) {
     setThinking(false);
-    document.getElementById('mic-label').textContent = 'Não entendi, tente novamente';
+    document.getElementById('mic-btn').disabled = false;
+    document.getElementById('mic-label').textContent = 'Não entendi, tente de novo';
     return;
   }
 
-  // 2. Para atividade de palavras, compara com a palavra atual
-  if (currentActivity === 'words') {
-    const word = WORDS[wordIdx];
-    const correct = text.toLowerCase().includes(word.en.toLowerCase()) ||
-                    text.toLowerCase().includes(word.pt.toLowerCase());
-
-    const fbRes = await fetch('/api/word/feedback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        word_pt: word.pt,
-        word_en: word.en,
-        child_said: text,
-        correct,
-      }),
-    });
-    const fb = await fbRes.json();
-    setThinking(false);
-    showTeacherBubble(fb.text);
-    playAudioB64(fb.audio_b64);
-    if (correct) setTimeout(nextWord, 3000);
-  } else {
-    // Para outras atividades, resposta livre da professora
-    const res = await fetch('/api/voice/respond', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profile: 'noah', text, activity: currentActivity }),
-    });
-    const data = await res.json();
-    setThinking(false);
-    showTeacherBubble(data.text);
-    playAudioB64(data.audio_b64);
-  }
-
-  document.getElementById('mic-label').textContent = 'Toque para falar';
-}
-
-async function teacherSpeak(text) {
-  showTeacherBubble(text);
-  const res = await fetch('/api/voice/respond', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ profile: 'noah', text: '__greet__', activity: currentActivity }),
+  // Envia para Luna decidir
+  const res = await fetch('/api/luna/respond', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({profile:'noah', child_said:text, is_word_attempt:true}),
   });
-}
+  const data = await res.json();
 
-function showTeacherBubble(text) {
-  document.getElementById('teacher-text').textContent = text;
-  document.getElementById('teacher-bubble').classList.add('visible');
-}
+  setThinking(false);
+  showLuna(data.text);
+  playAudio(data.audio_b64);
 
-function setThinking(on) {
-  document.getElementById('thinking').classList.toggle('visible', on);
-  document.getElementById('mic-btn').disabled = on;
-}
-
-function playAudioB64(b64) {
-  if (!b64) return;
-  const audio = new Audio('data:audio/mp3;base64,' + b64);
-  audio.play().catch(() => {});
-}
-
-// Init
-showWord();
-
-// Finaliza sessão ao sair
-window.addEventListener('beforeunload', () => {
-  if (sessionId) {
-    navigator.sendBeacon('/api/session/end',
-      JSON.stringify({ profile: 'noah' }));
+  // Atualiza XP
+  if (data.progress && data.progress.total_xp !== undefined) {
+    progress.total_xp = data.progress.total_xp;
+    progress.dino_stage = data.progress.dino_stage;
+    progress.streak_days = data.progress.streak_days;
+    renderDino();
+    renderXpBar();
   }
+
+  // Mostra XP ganho
+  if (data.xp_earned) showXpPop(data.xp_earned);
+
+  // Processa ação da Luna
+  const action = data.action;
+  if (action === 'PRÓXIMA' || action === 'PROXIMA') {
+    wordIdx = data.word_idx || (wordIdx + 1);
+    if (wordIdx < wordSet.length) {
+      setTimeout(() => { showWord(); }, 1800);
+    }
+  } else if (action === 'COMPLETO') {
+    setTimeout(() => completeStep(), 2000);
+  }
+
+  document.getElementById('mic-btn').disabled = false;
+  document.getElementById('mic-label').textContent = 'Toque e responda a Luna';
+}
+
+async function completeStep() {
+  const res = await fetch('/api/progress/complete-step', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({profile:'noah', xp:30}),
+  });
+  const newProg = await res.json();
+  const oldDino = progress.dino_stage;
+  progress = {...progress, ...newProg};
+  renderAll();
+  closeActivity();
+  if (newProg.dino_stage > oldDino) showDinoEvolve(newProg.dino_stage);
+}
+
+function showDinoEvolve(stage) {
+  const s = DINO_STAGES[Math.min(stage, 3)];
+  document.getElementById('evolve-emoji').textContent = s.emoji;
+  document.getElementById('evolve-title').textContent = 'Incrível, Noah! 🎉';
+  document.getElementById('evolve-sub').textContent = `Seu dinossauro virou: ${s.name}!`;
+  document.getElementById('dino-evolve').classList.add('visible');
+}
+function closeDinoEvolve() { document.getElementById('dino-evolve').classList.remove('visible'); }
+
+function showLuna(text) {
+  document.getElementById('luna-text').textContent = text;
+  document.getElementById('luna-bubble').classList.add('visible');
+}
+function setThinking(on) { document.getElementById('luna-thinking').classList.toggle('visible', on); }
+function showXpPop(xp) {
+  const el = document.getElementById('xp-pop');
+  el.textContent = `+${xp} XP ⭐`;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 2000);
+}
+function playAudio(b64) {
+  if (!b64) return;
+  new Audio('data:audio/mp3;base64,' + b64).play().catch(()=>{});
+}
+
+window.addEventListener('beforeunload', () => {
+  if (sessionId) navigator.sendBeacon('/api/session/end', JSON.stringify({profile:'noah',xp:0}));
 });
 </script>
-
 </body>
 </html>
